@@ -2,7 +2,7 @@
 
 TMP_FOLDER=$(mktemp -d)
 CONFIG_FILE='artax.conf'
-CONFIGFOLDER='/root/.arataxcore'
+CONFIGFOLDER='/root/.artaxcore'
 COIN_DAEMON='artaxd'
 COIN_CLI='artax-cli'
 COIN_PATH='/usr/local/bin/'
@@ -20,27 +20,6 @@ GREEN='\033[0;32m'
 NC='\033[0m'
 
 
-function compile_node() {
-  echo -e "Prepare to compile $COIN_NAME"
-  git clone $COIN_REPO $TMP_FOLDER >/dev/null 2>&1
-  compile_error
-  cd $TMP_FOLDER
-  chmod +x ./autogen.sh 
-  chmod +x ./share/genbuild.sh
-  ./autogen.sh
-  compile_error
-  ./configure
-  compile_error
-  make
-  compile_error
-  make install
-  compile_error
-  strip $COIN_PATH$COIN_DAEMON $COIN_PATH$COIN_CLI
-  cd - >/dev/null 2>&1
-  rm -rf $TMP_FOLDER >/dev/null 2>&1
-  clear
-}
-
 function download_node() {
   echo -e "Prepare to download $COIN_NAME binaries"
   cd $TMP_FOLDER
@@ -52,12 +31,6 @@ function download_node() {
   cd - >/dev/null 2>&1
   rm -r $TMP_FOLDER >/dev/null 2>&1
   clear
-}
-
-function ask_permission() {
- echo -e "${RED}I trust zoldur and want to use$ $COIN_NAME binaries compiled on his server.${NC}."
- echo -e "Please type ${RED}YES${NC} if you want to use precompiled binaries, or type anything else to compile them on your server"
- read -e ZOLDUR
 }
 
 function configure_systemd() {
@@ -119,7 +92,7 @@ EOF
 
 function create_key() {
   echo -e "Enter your ${RED}$COIN_NAME Masternode Private Key${NC}. Leave it blank to generate a new ${RED}Masternode Private Key${NC} for you:"
-  read -e COINKEY
+  read -t 10 -e COINKEY
   if [[ -z "$COINKEY" ]]; then
   $COIN_PATH$COIN_DAEMON -daemon
   sleep 30
@@ -267,25 +240,6 @@ fi
 clear
 }
 
-function create_swap() {
- echo -e "Checking if swap space is needed."
- PHYMEM=$(free -g|awk '/^Mem:/{print $2}')
- SWAP=$(free -g|awk '/^Swap:/{print $2}')
- if [ "$PHYMEM" -lt "2" ] && [ -n "$SWAP" ]
-  then
-    echo -e "${GREEN}Server is running with less than 2G of RAM without SWAP, creating 2G swap file.${NC}"
-    SWAPFILE=$(mktemp)
-    dd if=/dev/zero of=$SWAPFILE bs=1024 count=2M
-    chmod 600 $SWAPFILE
-    mkswap $SWAPFILE
-    swapon -a $SWAPFILE
- else
-  echo -e "${GREEN}Server running with at least 2G of RAM, no swap needed.${NC}"
- fi
- clear
-}
-
-
 function important_information() {
  echo
  echo -e "================================================================================================================================"
@@ -315,12 +269,6 @@ clear
 
 checks
 prepare_system
-ask_permission
-if [[ "$ZOLDUR" == "YES" ]]; then
-  download_node
-else
-  create_swap
-  compile_node
-fi
+download_node
 setup_node
 
