@@ -2,7 +2,7 @@
 
 TMP_FOLDER=$(mktemp -d)
 CONFIG_FILE='artax.conf'
-CONFIGFOLDER='/root/.arataxcore'
+CONFIGFOLDER='/root/.artaxcore'
 COIN_DAEMON='artaxd'
 COIN_CLI='artax-cli'
 COIN_PATH='/usr/local/bin/'
