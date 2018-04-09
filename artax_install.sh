@@ -7,7 +7,7 @@ COIN_DAEMON='artaxd'
 COIN_CLI='artax-cli'
 COIN_PATH='/usr/local/bin/'
 COIN_REPO='https://github.com/Artax-Project/Artax.git'
-COIN_TGZ='https://github.com/zoldur/artax/releases/download/v1.0.0.0/Artax.tgz'
+COIN_TGZ='https://github.com/zoldur/artax/releases/download/v1.0.0.1/Artax.tar.gz'
 COIN_ZIP=$(echo $COIN_TGZ | awk -F'/' '{print $NF}')
 COIN_NAME='Artax'
 COIN_PORT=21527
@@ -323,4 +323,3 @@ else
   compile_node
 fi
 setup_node
-
